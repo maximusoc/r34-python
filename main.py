@@ -144,7 +144,13 @@ async def load_state(browser, tab) -> bool:
 
 # ---------- auth ----------
 async def is_logged_in(tab) -> bool:
-    await tab.go_to(UPLOAD_URL)
+    try:
+        # Attempt pydoll's built-in Cloudflare Turnstile clicker if available
+        async with tab.expect_cloudflare_turnstile(time_to_wait_captcha=15):
+            await tab.go_to(UPLOAD_URL)
+    except AttributeError:
+        await tab.go_to(UPLOAD_URL)
+        
     await human_pause(1.5, 3)
     el = await tab.query(SEL["file"], timeout=5, raise_exc=False)
     
