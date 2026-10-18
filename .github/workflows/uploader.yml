@@ -2,7 +2,7 @@ name: Scheduled Uploader
 
 on:
   schedule:
-    - cron: "*/25 * * * *" # every 25 minutes
+    - cron: "*/27 * * * *" # every 25 minutes
   workflow_dispatch:
 
 permissions:
@@ -29,14 +29,14 @@ jobs:
       - name: Locate Chrome
         run: echo "CHROME_PATH=$(which google-chrome || which chromium-browser)" >> "$GITHUB_ENV"
 
-      # - name: Random Delay (0 to 15 Minutes)
-      #   run: |
-      #      # Generate random number between 0 and 900 seconds (15 minutes)
-      #       DELAY=$((RANDOM % 901))
-      #       MIN=$((DELAY / 60))
-      #       SEC=$((DELAY % 60))
-      #       echo "Waiting ${MIN}m ${SEC}s before starting main.py..."
-      #       sleep $DELAY
+      - name: Random Delay (0 to 15 Minutes)
+        run: |
+           # Generate random number between 0 and 900 seconds (15 minutes)
+            DELAY=$((RANDOM % 901))
+            MIN=$((DELAY / 60))
+            SEC=$((DELAY % 60))
+            echo "Waiting ${MIN}m ${SEC}s before starting main.py..."
+            sleep $DELAY
 
       # Cache entries are immutable, so each run saves under a fresh key
       # and restores the newest previous one via the prefix.
