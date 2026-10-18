@@ -1,0 +1,90 @@
+name: Scheduled Uploader
+
+on:
+  schedule:
+    - cron: "*/25 * * * *" # every 25 minutes
+  workflow_dispatch:
+
+permissions:
+  contents: write # needed to commit posts.json back
+
+concurrency:
+  group: r34-uploader # never run two at once
+  cancel-in-progress: false
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Locate Chrome
+        run: echo "CHROME_PATH=$(which google-chrome || which chromium-browser)" >> "$GITHUB_ENV"
+
+      # - name: Random Delay (0 to 15 Minutes)
+      #   run: |
+      #      # Generate random number between 0 and 900 seconds (15 minutes)
+      #       DELAY=$((RANDOM % 901))
+      #       MIN=$((DELAY / 60))
+      #       SEC=$((DELAY % 60))
+      #       echo "Waiting ${MIN}m ${SEC}s before starting main.py..."
+      #       sleep $DELAY
+
+      # Cache entries are immutable, so each run saves under a fresh key
+      # and restores the newest previous one via the prefix.
+      - name: Restore session state
+        uses: actions/cache/restore@v4
+        with:
+          path: storageState.json
+          key: r34-session-${{ github.run_id }}
+          restore-keys: |
+            r34-session-
+      - name: Seed session state
+        if: hashFiles('storageState.json') == ''
+        env:
+          STATE_JSON: ${{ secrets.R34_STORAGE_STATE }}
+        run: |
+          if [ -n "$STATE_JSON" ]; then
+            echo "$STATE_JSON" > storageState.json
+          fi
+
+      - name: Run uploader
+        env:
+          R34_USERNAME: ${{ secrets.R34_USERNAME }}
+          R34_PASSWORD: ${{ secrets.R34_PASSWORD }}
+          GDRIVE_CLIENT_ID: ${{ secrets.GDRIVE_CLIENT_ID }}
+          GDRIVE_CLIENT_SECRET: ${{ secrets.GDRIVE_CLIENT_SECRET }}
+          GDRIVE_REFRESH_TOKEN: ${{ secrets.GDRIVE_REFRESH_TOKEN }}
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+        run: xvfb-run --auto-servernum --server-args="-screen 0 1366x843x24" python main.py
+
+      - name: Save session state
+        if: always() && hashFiles('storageState.json') != ''
+        uses: actions/cache/save@v4
+        with:
+          path: storageState.json
+          key: r34-session-${{ github.run_id }}
+
+      - name: Commit updated queue
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add posts.json
+          git diff --staged --quiet || (git commit -m "Update posted items [skip ci]" && git pull --rebase && git push)
+
+      - name: Upload debug screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug
+          path: debug/
+          if-no-files-found: ignore
