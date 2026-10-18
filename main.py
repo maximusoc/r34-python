@@ -147,12 +147,15 @@ async def is_logged_in(tab) -> bool:
     await tab.go_to(UPLOAD_URL)
     await human_pause(1.5, 3)
     el = await tab.query(SEL["file"], timeout=5, raise_exc=False)
+    
+    await snap(tab, "01. checking_credentials")
+    
     return el is not None
 async def login(tab):
     log.info("Logging in...")
     try:
         # Attempt pydoll's built-in Cloudflare Turnstile clicker if available
-        async with tab.expect_and_bypass_cloudflare_captcha():
+        async with tab.expect_cloudflare_turnstile(time_to_wait_captcha=15):
             await tab.go_to(LOGIN_URL)
     except AttributeError:
         await tab.go_to(LOGIN_URL)
