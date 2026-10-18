@@ -1,0 +1,5 @@
+storageState.json
+.env
+tmp_downloads/
+debug/
+__pycache__/
