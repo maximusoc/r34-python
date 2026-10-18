@@ -228,6 +228,8 @@ async def upload_post(tab, post: dict, image_path: Path) -> bool:
     except AttributeError:
         await tab.go_to(UPLOAD_URL)
     await human_pause(1.5, 3)
+
+    await snap(tab, "02. Upload form")
     
     file_input = await tab.query(SEL["file"], timeout=15)
     await file_input.set_input_files(str(image_path.resolve()))
