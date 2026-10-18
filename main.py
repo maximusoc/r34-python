@@ -221,7 +221,12 @@ async def upload_post(tab, post: dict, image_path: Path) -> bool:
     if not rating:
         raise ValueError(f"Invalid rating: {post['rating']}")
 
-    await tab.go_to(UPLOAD_URL)
+    try:
+        # Attempt pydoll's built-in Cloudflare Turnstile clicker if available
+        async with tab.expect_cloudflare_turnstile(time_to_wait_captcha=15):
+            await tab.go_to(UPLOAD_URL)
+    except AttributeError:
+        await tab.go_to(UPLOAD_URL)
     await human_pause(1.5, 3)
     
     file_input = await tab.query(SEL["file"], timeout=15)
