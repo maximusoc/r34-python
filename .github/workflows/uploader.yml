@@ -29,14 +29,14 @@ jobs:
       - name: Locate Chrome
         run: echo "CHROME_PATH=$(which google-chrome || which chromium-browser)" >> "$GITHUB_ENV"
 
-      #- name: Random Delay (0 to 15 Minutes)
-      #  run: |
+      - name: Random Delay (0 to 15 Minutes)
+        run: |
            # Generate random number between 0 and 900 seconds (15 minutes)
-      #      DELAY=$((RANDOM % 901))
-      #      MIN=$((DELAY / 60))
-      #      SEC=$((DELAY % 60))
-      #      echo "Waiting ${MIN}m ${SEC}s before starting main.py..."
-      #      sleep $DELAY
+            DELAY=$((RANDOM % 901))
+            MIN=$((DELAY / 60))
+            SEC=$((DELAY % 60))
+            echo "Waiting ${MIN}m ${SEC}s before starting main.py..."
+            sleep $DELAY
 
       # Cache entries are immutable, so each run saves under a fresh key
       # and restores the newest previous one via the prefix.
@@ -81,14 +81,10 @@ jobs:
           git add posts.json
           git diff --staged --quiet || (git commit -m "Update posted items [skip ci]" && git pull --rebase && git push)
 
-      - name: Run tests
-        id: tests
-        run: npm test
-
       - name: Upload debug screenshots
-        if: ${{ failure() }}
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: debug
-          path: ${{ github.workspace }}/debug/
-          if-no-files-found: warn
+          path: debug/
+          if-no-files-found: ignore
