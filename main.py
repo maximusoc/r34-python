@@ -41,7 +41,7 @@ SEL = {
     "title": 'input[name="title"]',
     "rating": lambda r: f'input[name="rating"][value="{r}"]',
     "tags": 'textarea[name="tags"]',
-    "submit": 'input[type="submit"][name="submit"], input[type="submit"][value*="pload"]',
+    "submit": 'input[type="submit"][name="submit"]',
 }
 
 
