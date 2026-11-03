@@ -154,9 +154,8 @@ async def is_logged_in(tab) -> bool:
     await human_pause(1.5, 3)
     el = await tab.query(SEL["file"], timeout=5, raise_exc=False)
     
-    await snap(tab, "01. checking_credentials")
-    
     return el is not None
+
 async def login(tab):
     log.info("Logging in...")
     try:
@@ -187,56 +186,140 @@ async def login(tab):
     log.info("Login OK")
 
 # ---------- tag security ----------
+# Tags stripped from every post. Write them with spaces or underscores; both work.
+_BLACKLISTED_TAGS_RAW = [
+    "cowboy shot",
+    "from side",
+    "librarian",
+    "clitoris",
+    "pussy juice",
+    "puckered anus",
+    "huge areola",
+    "erected nipples"
+]
+BLACKLISTED_TAGS = {t.strip().lower().replace(" ", "_") for t in _BLACKLISTED_TAGS_RAW}
+
+# Tags that must be on every post
+REQUIRED_TAGS = ("maximusoc", "ai_generated")
+
+# Tags rewritten to a different tag (lowercase source -> replacement)
+TAG_REPLACEMENTS = {
+    "1girl": "1girls",
+}
+
+
 def sanitize_tags(raw_tags: str) -> str:
     """Enforce tag rules before upload.
 
     Rules:
-    - Tags string must contain > 10 space-separated keywords; otherwise raise.
-    - If the count is > 10, ensure 'maximusoc' and 'ai_generated' are present
-      (add them if missing).
-    - Log a warning when the final keyword count is not > 12.
+    - Tags in BLACKLISTED_TAGS are removed first (before counting).
+    - Tags in TAG_REPLACEMENTS are rewritten (e.g. 1girl -> 1girls).
+    - Tags string must contain > 12 space-separated keywords; otherwise raise.
+    - 'maximusoc' and 'ai_generated' (REQUIRED_TAGS) are always added if missing,
+      and the result is verified to contain them.
     """
     keywords = raw_tags.split()
+
+    removed = [k for k in keywords if k.lower() in BLACKLISTED_TAGS]
+    if removed:
+        log.info("Removed blacklisted tags: %s", " ".join(removed))
+        keywords = [k for k in keywords if k.lower() not in BLACKLISTED_TAGS]
+
+    keywords = [TAG_REPLACEMENTS.get(k.lower(), k) for k in keywords]
+    # Dedupe in case a replacement collides with an existing tag
+    keywords = list(dict.fromkeys(keywords))
+
     count = len(keywords)
 
-    if count <= 10:
+    if count <= 12:
         raise ValueError(
-            f"Tag count ({count}) must be greater than 10. "
+            f"Tag count ({count}) must be greater than 12. "
             f"Please add more descriptive tags."
         )
 
-    # Inject required tags if absent
-    required = {"maximusoc", "ai_generated"}
-    for tag in required:
-        if tag not in keywords:
+    # Inject required tags if absent (case-insensitive check)
+    present = {k.lower() for k in keywords}
+    for tag in REQUIRED_TAGS:
+        if tag not in present:
             keywords.append(tag)
-            log.info("Tag '%s' was missing — added automatically.", tag)
+            log.info("Required tag '%s' was missing — added automatically.", tag)
 
-    if len(keywords) <= 12:
-        log.warning(
-            "Tag count (%d) is not greater than 12. Consider adding more tags.",
-            len(keywords),
-        )
+    # Hard guarantee: never return a tag string without the required tags
+    final = {k.lower() for k in keywords}
+    missing = [t for t in REQUIRED_TAGS if t not in final]
+    if missing:
+        raise ValueError(f"Required tags missing after sanitizing: {missing}")
 
     return " ".join(keywords)
 
 
+# ---------- captcha provider check ----------
+MAX_CAPTCHA_REFRESHES = 15
+
+# Detects any captcha that is NOT Cloudflare Turnstile (reCAPTCHA, hCaptcha, etc.).
+# Looks at iframes/scripts by URL and at the usual widget containers.
+_FOREIGN_CAPTCHA_JS = """
+return JSON.stringify((() => {
+  const cf = /challenges\\.cloudflare\\.com|cdn-cgi\\/challenge-platform/i;
+  const found = [];
+  document.querySelectorAll('iframe[src], script[src]').forEach(el => {
+    const s = el.src || '';
+    if (cf.test(s)) return;
+    if (/recaptcha|hcaptcha|geetest|funcaptcha|arkoselabs|mtcaptcha|friendlycaptcha|captcha\\.com|keycaptcha/i.test(s)) found.push(s);
+  });
+  document.querySelectorAll('.g-recaptcha, .h-captcha, .grecaptcha-badge, [data-hcaptcha-widget-id]')
+    .forEach(el => found.push('element:' + (el.className || el.tagName)));
+  return found;
+})());
+"""
+
+
+async def foreign_captchas(tab) -> list[str]:
+    """Return markers of non-Cloudflare captchas on the current page (empty if none)."""
+    try:
+        raw = await tab.execute_script(_FOREIGN_CAPTCHA_JS)
+        return json.loads(raw["result"]["result"]["value"])
+    except Exception as e:  # noqa
+        log.warning("Captcha provider check failed: %s", e)
+        return []
+
+
+async def load_upload_page(tab):
+    """Open the upload page, refreshing until only Cloudflare's captcha (or none) is present."""
+    for attempt in range(1, MAX_CAPTCHA_REFRESHES + 1):
+        try:
+            # Attempt pydoll's built-in Cloudflare Turnstile clicker if available
+            async with tab.expect_cloudflare_turnstile(time_to_wait_captcha=15):
+                await tab.go_to(UPLOAD_URL)
+        except AttributeError:
+            await tab.go_to(UPLOAD_URL)
+        await human_pause(1.5, 3)
+
+        others = await foreign_captchas(tab)
+        if not others:
+            if attempt > 1:
+                log.info("Upload page clean after %d attempts", attempt)
+            return
+        log.warning(
+            "Non-Cloudflare captcha present (%s); refreshing (%d/%d)",
+            ", ".join(others[:3]), attempt, MAX_CAPTCHA_REFRESHES,
+        )
+        await human_pause(2, 5)
+
+    await snap(tab, "foreign_captcha")
+    raise RuntimeError(
+        f"Non-Cloudflare captcha still present after {MAX_CAPTCHA_REFRESHES} refreshes"
+    )
+
+
 # ---------- upload ----------
 async def upload_post(tab, post: dict, image_path: Path) -> bool:
-    rating = RATING_MAP.get(post["rating"].lower())
-    if not rating:
-        raise ValueError(f"Invalid rating: {post['rating']}")
+    # is_sfw: true -> "questionable", false -> "explicit"
+    rating = RATING_MAP["questionable" if post["is_sfw"] else "explicit"]
+    title_text = f"{post['character']} - {post['source']}"
 
-    try:
-        # Attempt pydoll's built-in Cloudflare Turnstile clicker if available
-        async with tab.expect_cloudflare_turnstile(time_to_wait_captcha=15):
-            await tab.go_to(UPLOAD_URL)
-    except AttributeError:
-        await tab.go_to(UPLOAD_URL)
-    await human_pause(1.5, 3)
+    await load_upload_page(tab)
 
-    await snap(tab, "02. Upload form")
-    
     file_input = await tab.query(SEL["file"], timeout=15)
     await file_input.set_input_files(str(image_path.resolve()))
     await human_pause()
@@ -246,20 +329,29 @@ async def upload_post(tab, post: dict, image_path: Path) -> bool:
     await human_pause(0.4, 1.0)
 
     src = await tab.query(SEL["source"], timeout=10)
-    await src.insert_text("")  # ensure focus path is valid
+    await src.insert_text("")
+    
     await type_into(src, SOURCE, fast=True)
     await human_pause(0.4, 1.0)
 
-    title = await tab.query(SEL["title"], timeout=10, raise_exc=False)
-    if title and post.get("title"):
-        await type_into(title, post["title"])
-        await human_pause(0.4, 1.0)
-
     tags = await tab.query(SEL["tags"], timeout=10)
 
-    clean_tags = sanitize_tags(post["tags"])
+    clean_tags = sanitize_tags(post["booru_tags"])
+    log.info("Typing tags: %r", clean_tags)
     await type_into(tags, clean_tags, fast=True)
     await human_pause(1, 2)
+
+    # Title goes after tags: focusing it closes the tag autocomplete dropdown,
+    # which otherwise covers the upload button.
+    title = await tab.query(SEL["title"], timeout=10, raise_exc=False)
+    if title:
+        await type_into(title, title_text)
+        await human_pause(0.4, 1.0)
+
+    # Final gate: refuse to submit unless the required tags are in the string we typed
+    typed = {k.lower() for k in clean_tags.split()}
+    if not all(t in typed for t in REQUIRED_TAGS):
+        raise ValueError(f"Refusing to submit: required tags {REQUIRED_TAGS} missing")
 
     submit = await tab.query(SEL["submit"], timeout=10)
     await submit.click()
