@@ -780,7 +780,10 @@
     "booru_tags": "daphne_blake scooby-doo 1girl orange_hair long_hair purple_eyes hairband tennis_outfit tennis_skirt pleated_skirt polo_shirt wristbands headband sweatdrop lying on_stomach facing_viewer ass negative_space from_side cleavage worried looking_at_viewer blush open_mouth raised_inner_eyebrows eyebrows_raised v-shaped_eyebrows",
     "da_tags": "scoobydoo, scooby_doo, scoobydoofanart, scoobydoocartoon, cartoon, scoobydoowhereareyou, scoobydoovelma, fanart, scooby_doo_fanart, scooby, shaggyrogers, velmadinkley, scoobydoomysteryincorporated, shaggyscoobydoo, daphneblake, digitalart, scoobydoodaphne, scoobydooshaggy, hannabarbera, shaggy",
     "x_hashtags": "#DaphneAnnBlake, #ScoobyDoo, #FanArt",
-    "da_stash_id": null
+    "da_stash_id": null,
+    "failed": true,
+    "failed_at": "2026-11-06T04:42:52.173631+00:00",
+    "error": "Site rejected the upload (error/duplicate/unknown)"
   },
   {
     "filename": "ComfyUI_upscale_00029_.png",
