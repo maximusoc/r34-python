@@ -1650,7 +1650,10 @@
     "booru_tags": "velma_dinkley scooby-doo cartoon_network 1girl brown_hair auburn_hair short_hair bob_cut black_eyes glasses thick-framed_eyewear freckles hair_bow pilot_suit bodysuit futuristic gloves translucent translucent_bodysuit pilot_suit unzipped open_clothes zipper breasts_out nipples sitting from_side arms_behind_back arm_support leg_up big_butt smile blush closed_eyes",
     "da_tags": "scoobydoo, velmadinkley, velma_dinkley, scoobydoofanart, scooby_doo, scoobydoovelma, velmascoobydoo, velma, cartoon, fanart, scoobydoowhereareyou, scoobydoocartoon, scoobydoomysteryincorporated, velmadinkleyfanart, scooby, digitalart, hannabarbera, scooby_doo_fanart, cartoonnetwork, shaggyrogers",
     "x_hashtags": "#VelmaDinkley, #ScoobyDoo, #FanArt",
-    "da_stash_id": null
+    "da_stash_id": null,
+    "failed": true,
+    "failed_at": "2026-11-08T13:31:15.526434+00:00",
+    "error": "Site rejected the upload (error/duplicate/unknown)"
   },
   {
     "filename": "ComfyUI_upscale_00060_.png",
