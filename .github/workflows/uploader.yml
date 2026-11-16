@@ -1,8 +1,6 @@
 name: Scheduled Uploader
 
 on:
-  schedule:
-    - cron: "7,37 * * * *" # every 25 minutes
   workflow_dispatch:
 
 permissions:
