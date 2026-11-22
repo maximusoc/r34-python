@@ -1943,7 +1943,10 @@
     "booru_tags": "mitsuri_kanroji demon_slayer kimetsu_no_yaiba kanroji_mitsuri green_eyes pink_hair green_hair multicolored_hair braid braided_hair braided_ponytail braided_twintail hair_between_eyes demon_slayer_uniform haori green_haori skirt black_skirt green_thighhighs thighhighs 1boy princess_carry carrying carrying_person standing hetero faceless_male smile looking_at_viewer blush",
     "da_tags": "demonslayer, kimetsunoyaiba, demon_slayer, demonslayerfanart, mitsuri_kanroji, kimetsunoyaibafanart, mitsurikanroji, mitsurikanrojifanart, demon_slayer_kimetsu_no_yaiba, kimetsu_no_yaiba, mitsuridemonslayer, demonslayerkimetsunoyaiba, mitsuri, anime, demonslayerart, kimetsunoyaibaanime, kimetsunoyaibaart, nezuko_kamado, mitsuri_fanart, animefanart",
     "x_hashtags": "#MitsuriKanroji, #DemonSlayer, #FanArt",
-    "da_stash_id": "6275882376474451"
+    "da_stash_id": "6275882376474451",
+    "failed": true,
+    "failed_at": "2026-11-22T12:14:43.496796+00:00",
+    "error": "Site rejected the upload (error/duplicate/unknown)"
   },
   {
     "filename": "ComfyUI_upscale_00174_.png",
