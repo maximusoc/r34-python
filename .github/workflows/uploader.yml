@@ -80,7 +80,7 @@ jobs:
           git diff --staged --quiet || (git commit -m "Update posted items [skip ci]" && git pull --rebase && git push)
 
       - name: Upload debug screenshots
-        if: failure()
+        #if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: debug
