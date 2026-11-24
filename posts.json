@@ -2435,7 +2435,10 @@
     "booru_tags": "atom_eve invincible 1girl long_hair ginger_hair orange_hair green_eyes large_breasts camisole panties lace_panties thighhighs panties_aside clothes_aside pussy wariza sitting full_body smile blush confident looking_at_viewer",
     "da_tags": "invincible, invinciblefanart, atom_eve, invinciblecomic, atomevefanart, fanart, atomeve, superhero, digitalart, atomeveinvincible, invincibleshow, omniman, digitalillustration, imagecomics, fanartdigital, digitaldrawing, invinciblecomics, superheroine, markgrayson, invincibleonprime",
     "x_hashtags": "#AtomEve, #Invincible, #FanArt",
-    "da_stash_id": "7772814746974407"
+    "da_stash_id": "7772814746974407",
+    "failed": true,
+    "failed_at": "2026-11-24T22:33:23.100124+00:00",
+    "error": "Site rejected the upload (error/duplicate/unknown)"
   },
   {
     "filename": "ComfyUI_upscale_00090_.png",
