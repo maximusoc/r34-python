@@ -3230,7 +3230,10 @@
     "booru_tags": "shego kim_possible 1girl large_breasts green_eyes black_hair long_hair colored_skin green_skin black_lipstick black_lips lipstick bikini leaf_bikini 1boy princess_carry carrying carrying_person standing hetero faceless_male hug blush looking_at_viewer smug evil_smile v-shaped_eyebrows",
     "da_tags": "kimpossible, shego, fanart, kimpossiblefanart, kim_possible, disney, shegokimpossible, kim, kimpossibledisney, digitalart, fanartdigital, possible, shegofanart, disneyfanart, green, pinup, female, girl, cartoon, digitalillustration",
     "x_hashtags": "#Shego, #KimPossible, #FanArt",
-    "da_stash_id": "8571235045612481"
+    "da_stash_id": "8571235045612481",
+    "failed": true,
+    "failed_at": "2026-11-26T12:11:05.698505+00:00",
+    "error": "Site rejected the upload (error/duplicate/unknown)"
   },
   {
     "filename": "ComfyUI_upscale_00218_.png",
