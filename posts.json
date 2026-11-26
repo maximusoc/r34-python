@@ -3035,7 +3035,10 @@
     "booru_tags": "princess_daisy mario_(series) super_mario_bros. crown earrings brown_hair blue_eyes large_breasts 1girl medium_hair bikini areola_slip standing leaning_forward from_side finger_to_mouth hand_on_own_thighs smile blush closed_eyes clenched_teeth",
     "da_tags": "nintendo, super_mario, supermario, supermariobros, princess_daisy, super_mario_bros, mario, nintendofanart, princessdaisy, marionintendo, supermariofanart, mariobros, mario_nintendo, fanart, mariofanart, princess, daisy, daisyprincess, princessdaisynintendo, princessdaisyfanart",
     "x_hashtags": "#PrincessDaisy, #SuperMario, #FanArt",
-    "da_stash_id": "659179332850303"
+    "da_stash_id": "659179332850303",
+    "failed": true,
+    "failed_at": "2026-11-26T00:48:33.278412+00:00",
+    "error": "Site rejected the upload (error/duplicate/unknown)"
   },
   {
     "filename": "ComfyUI_upscale_00396_.png",
