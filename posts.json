@@ -3680,7 +3680,10 @@
     "booru_tags": "haruno_sakura naruto_(series) naruto_shippuden 1girl green_eyes pink_hair red_hairband hairband forehead_mark short_hair red_dress forehead_protector pink_hair green_eyes 1boy princess_carry carrying carrying_person standing hetero faceless_male excited happy_face smile looking_at_viewer laughing",
     "da_tags": "naruto, narutoshippuden, sakuraharuno, sakura_haruno, sakuraharunonaruto, sakura, fanart, anime, narutouzumaki, narutofanart, sakurauchiha, sakuranaruto, animefanart, boruto, animegirl, digitalart, ai, harunosakura, haruno_sakura, fanartdigital",
     "x_hashtags": "#SakuraHaruno, #Naruto, #FanArt",
-    "da_stash_id": "4762047718811200"
+    "da_stash_id": "4762047718811200",
+    "failed": true,
+    "failed_at": "2026-11-27T06:16:29.155325+00:00",
+    "error": "Site rejected the upload (error/duplicate/unknown)"
   },
   {
     "filename": "ComfyUI_upscale_00667_.png",
