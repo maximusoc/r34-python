@@ -3935,7 +3935,10 @@
     "booru_tags": "gwen_tennyson ben_10 1girl orange_hair green_eyes short_hair hairclip small_breasts rhythmic_gymnastics leotard ribbon highleg bare_legs kneeling full_body spread_legs v-shaped_eyebrows looking_at_viewer blush frustrated",
     "da_tags": "ben10, ben10omniverse, ben_10, ben10fanart, gwen_tennyson, ben10alienforce, gwentennyson, fanart, ben10ultimatealien, gwentennysonben10, ben10originalseries, ben_tennyson, cartoon, bentennyson, cartoonnetwork, gwen, digitalart, ben_10_omniverse, ben_10_fanart, fanartdigital",
     "x_hashtags": "#GwenTennyson, #Ben10, #FanArt",
-    "da_stash_id": null
+    "da_stash_id": null,
+    "failed": true,
+    "failed_at": "2026-11-27T16:44:10.469502+00:00",
+    "error": "Site rejected the upload (error/duplicate/unknown)"
   },
   {
     "filename": "ComfyUI_upscale_00555_.png",
